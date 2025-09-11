@@ -1,0 +1,250 @@
+# Config Reference: https://github.com/revoltchat/backend/blob/stable/crates/core/config/Revolt.toml
+# Default values for revolt.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+global:
+  namespace: 'revolt'
+  # Domain name used for access, ex revolt.example.com
+  domain: ''
+
+  web:
+    port: 5000
+  api:
+    port: 14702
+  bonfire:
+    port: 14703
+  autumn:
+    port: 14704
+  january:
+    port: 14705
+  crond:
+    port: 80
+  pushd:
+    port: 80
+
+  secret:
+    vapid_key: ''
+    vapid_public_key: ''
+    encryption_key: ''
+
+  ingress:
+    enabled: false
+    className: ''
+    annotations: {}
+    extra_hosts: []
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: { }
+    name: ""
+
+  subcharts:
+    mongo:  # mongodb
+      enabled: true  # Set to false to use external MongoDB
+      connection_url: ''
+    redis:
+      enabled: true  # Set to false to use external Redis
+      connection_url: ''
+    minio:
+      enabled: true  # Set to false to use external MinIO
+      connection_url: ''
+    rabbitmq:  # docker.io/rabbitmq:4
+      enabled: true  # Set to false to use external RabbitMQ
+      host: ''
+      port: 5672
+      username: 'rabbituser'
+      password: 'rabbitpass'
+
+
+mongodb:
+  architecture: standalone
+  auth:
+    enabled: false
+  persistence:
+    enabled: false
+
+
+redis:
+  architecture: standalone
+#  image:
+#    repository: eqalpha/keydb
+#    tag: x86_64_v6.3.4
+#    pullPolicy: IfNotPresent
+  auth:
+    enabled: false
+master:
+  persistence:
+    enabled: false
+
+
+rabbitmq:
+  replicaCount: 1
+  auth:
+    username: "rabbituser"
+    password: "rabbitpass"
+  persistence:
+    enabled: false
+
+
+minio:
+  mode: standalone
+  rootUser: minioautumn
+  rootPassword: minioautumn
+  persistence:
+    enabled: false
+  auth:
+    rootUser: 'minioautumn'
+    rootPassword: 'minioautumn'
+
+
+# Web app
+web:
+  image:
+    repository: ghcr.io/revoltchat/client
+    tag: master
+    pullPolicy: Always
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  replicaCount: 1
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+
+
+# Revolt API Server
+api:
+  image:
+    repository: ghcr.io/revoltchat/server
+    tag: 20250210-1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+
+
+# Events service
+bonfire:
+  image:
+    repository: ghcr.io/revoltchat/bonfire
+    tag: 20250210-1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+
+
+# File server
+autumn:
+  image:
+    repository: ghcr.io/revoltchat/autumn
+    tag: 20250210-1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+#  livenessProbe:
+  livenessProbe: {}
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+
+# Metadata and image proxy
+january:
+  image:
+    repository: ghcr.io/revoltchat/january
+    tag: 20250210-1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+
+# Regular task daemon
+crond:
+  image:
+    repository: ghcr.io/revoltchat/crond
+    tag: 20250210-1-debug
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+
+# Push notification daemon
+pushd:
+  image:
+    repository: ghcr.io/revoltchat/pushd
+    tag: 20250210-1
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  service:
+    type: ClusterIP
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml

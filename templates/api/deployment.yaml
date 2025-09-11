@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "revolt.fullname" . }}-api"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-api
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "revolt.selectorLabels" . | nindent 6 }}
+      revolt-app: {{ include "revolt.fullname" . }}-api
+  template:
+    metadata:
+      {{- with .Values.api.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        revolt-app: {{ include "revolt.fullname" . }}-api
+        {{- include "revolt.labels" . | nindent 8 }}
+        {{- with .Values.api.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 14702
+              protocol: TCP
+          livenessProbe:
+            {{- if .Values.api.livenessProbe }}
+            {{- toYaml .Values.api.livenessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.api.port }}
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.api.readinessProbe }}
+            {{- toYaml .Values.api.readinessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.api.port }}
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            {{- end }}
+          {{- with .Values.api.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: Revolt.toml
+              mountPath: {{ .Values.api.configMountPath }}
+            {{- with .Values.api.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "revolt.fullname" . }}-config
+        {{- with .Values.api.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "revolt.fullname" . }}-autumn
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-autumn
+spec:
+  type: {{ .Values.autumn.service.type }}
+  ports:
+    - name: http
+      targetPort: http
+      protocol: TCP
+      port: {{ .Values.global.autumn.port }}
+  selector:
+    {{- include "revolt.selectorLabels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-autumn

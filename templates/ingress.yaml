@@ -1,0 +1,86 @@
+{{- if .Values.global.ingress.enabled -}}
+{{- $fullName := include "revolt.fullname" . -}}
+
+---
+{{- if and .Values.global.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.global.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.global.ingress.annotations "kubernetes.io/ingress.class" .Values.global.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: "{{ $fullName }}"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+    kubernetes.io/tls-acme: "true"
+    {{- if eq .Values.global.ingress.className "nginx" }}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    {{- end }}
+spec:
+  {{- if and .Values.global.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.global.ingress.className }}
+  {{- end }}
+  tls:
+    - secretName: "tls-{{ include "revolt.fullname" . }}"
+      hosts:
+      - {{ .Values.global.domain }}
+  rules:
+    - host: {{ .Values.global.domain }}
+      http:
+        paths:
+          - path: '/api(/)?(.*)'
+            pathType: Prefix
+            backend:
+              service:
+                name: '{{ include "revolt.fullname" . }}-api'
+                port:
+                  name: http
+
+          - path: '/ws(/)?(.*)'
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: '{{ include "revolt.fullname" . }}-bonfire'
+                port:
+                  name: http
+
+          - path: '/autumn(/)?(.*)'
+            pathType: Prefix
+            backend:
+              service:
+                name: '{{ include "revolt.fullname" . }}-autumn'
+                port:
+                  name: http
+
+          - path: '/january(/)?(.*)'
+            pathType: Prefix
+            backend:
+              service:
+                name: '{{ include "revolt.fullname" . }}-january'
+                port:
+                  name: http
+
+          - path: '/(/)?(.*)'
+            pathType: Prefix
+            backend:
+              service:
+                name: '{{ include "revolt.fullname" . }}-web'
+                port:
+                  name: http
+
+
+{{- end }}

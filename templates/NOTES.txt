@@ -1,0 +1,4 @@
+Installation complete!
+
+Access the dashboard at https://{{ .Values.global.domain }}/
+

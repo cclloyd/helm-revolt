@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "revolt.fullname" . }}-pushd"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-pushd
+spec:
+  replicas: {{ .Values.pushd.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "revolt.selectorLabels" . | nindent 6 }}
+      revolt-app: {{ include "revolt.fullname" . }}-pushd
+  template:
+    metadata:
+      {{- with .Values.pushd.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        revolt-app: {{ include "revolt.fullname" . }}-pushd
+        {{- include "revolt.labels" . | nindent 8 }}
+        {{- with .Values.pushd.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: pushd
+          image: "{{ .Values.pushd.image.repository }}:{{ .Values.pushd.image.tag }}"
+          imagePullPolicy: {{ .Values.pushd.image.pullPolicy }}
+          env:
+            - name: RUST_BACKTRACE
+              value: 'full'
+          {{- if .Values.pushd.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.pushd.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.pushd.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.pushd.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pushd.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: Revolt.toml
+              mountPath: {{ .Values.pushd.configMountPath }}
+            {{- with .Values.pushd.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "revolt.fullname" . }}-config
+        {{- with .Values.pushd.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.pushd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pushd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pushd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

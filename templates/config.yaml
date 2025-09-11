@@ -1,0 +1,155 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "revolt.fullname" . }}-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  Revolt.toml: |
+    production = false
+
+    [database]
+    mongodb = {{ .Values.global.subcharts.mongo.connection_url | default (printf "mongodb://%s-mongodb" (include "revolt.fullname" .)) | quote }}
+    redis = {{ .Values.global.subcharts.redis.connection_url | default (printf "redis://%s-redis-master" (include "revolt.fullname" .)) | quote }}
+
+    [rabbit]
+    host = {{ .Values.global.subcharts.rabbitmq.host | default (printf "%s-rabbitmq" (include "revolt.fullname" .)) | quote }}
+    port = {{ .Values.global.subcharts.rabbitmq.port }}
+    username = {{ .Values.global.subcharts.rabbitmq.username | quote }}
+    password = {{ .Values.global.subcharts.rabbitmq.password | quote }}
+
+
+    [hosts]
+    app = "https://{{ .Values.global.domain }}"
+    api = "https://{{ .Values.global.domain }}/api"
+    events = "wss://{{ .Values.global.domain }}/ws"
+    autumn = "https://{{ .Values.global.domain }}/autumn"
+    january = "https://{{ .Values.global.domain }}/january"
+
+    [pushd.vapid]
+    private_key = "{{ .Values.global.secret.vapid_key }}"
+    public_key = "{{ .Values.global.secret.vapid_public_key }}"
+
+    [files]
+    encryption_key = "{{ .Values.global.secret.encryption_key }}"
+
+
+
+    [files.s3]
+    # S3 protocol endpoint
+    endpoint = {{ .Values.global.subcharts.minio.connection_url | default (printf "redis://%s-minio:9000" (include "revolt.fullname" .)) | quote }}
+    # Whether to use path-style buckets
+    # Generally true, except for MinIO
+    path_style_buckets = false
+    # S3 region name
+    region = "minio"
+    # S3 protocol key ID
+    access_key_id = "minioautumn"
+    # S3 protocol access key
+    secret_access_key = "minioautumn"
+    default_bucket = "revolt-uploads"
+
+  copy.py: |
+    import json
+    from pathlib import Path
+
+    SRC_PATH = Path('/management.json')
+    DEST_PATH = Path('/etc/revolt/management.json')
+
+    def load_json(path):
+        print(f'Loading JSON from {path}')
+        with open(path, 'r') as f:
+            return json.load(f)
+
+    def save_json(path, data):
+        print(f'Saving merged JSON to {path}')
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    def merge_dicts(source, destination, path=''):
+        for key, value in source.items():
+            full_path = f'{path}.{key}' if path else key
+            if value in (None, '', [], {}, False):
+                if key in destination:
+                    print(f'{full_path}\t\t->    SKIP   ->\t\t')
+                continue
+
+            if isinstance(value, dict) and isinstance(destination.get(key), dict):
+                merge_dicts(value, destination[key], full_path)
+            else:
+                if key in destination and destination[key] != value:
+                    print(f'{full_path}\t\t-> OVERWRITE ->\t\t{destination[key]} -> {value}')
+                elif key not in destination:
+                    print(f'{full_path}\t\t->    NEW    ->\t\t{value}')
+                destination[key] = value
+        return destination
+
+    def main():
+        if not DEST_PATH.exists():
+            print(f'{DEST_PATH} does not exist. Copying {SRC_PATH} as-is.')
+            DEST_PATH.write_text(SRC_PATH.read_text())
+        else:
+            print(f'{DEST_PATH} exists. Merging contents from {SRC_PATH}.')
+            src_data = load_json(SRC_PATH)
+            dest_data = load_json(DEST_PATH)
+            merged = merge_dicts(src_data, dest_data)
+            save_json(DEST_PATH, merged)
+
+    if __name__ == '__main__':
+        main()
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-utils
+  namespace: {{ .Values.global.namespace }}
+data:
+  copy.py: |
+    import json
+    from pathlib import Path
+
+    SRC_PATH = Path('/management.json')
+    DEST_PATH = Path('/etc/revolt/management.json')
+
+    def load_json(path):
+        print(f'Loading JSON from {path}')
+        with open(path, 'r') as f:
+            return json.load(f)
+
+    def save_json(path, data):
+        print(f'Saving merged JSON to {path}')
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    def merge_dicts(source, destination, path=''):
+        for key, value in source.items():
+            full_path = f'{path}.{key}' if path else key
+            if value in (None, '', [], {}, False):
+                if key in destination:
+                    print(f'{full_path}\t\t->    SKIP   ->\t\t')
+                continue
+
+            if isinstance(value, dict) and isinstance(destination.get(key), dict):
+                merge_dicts(value, destination[key], full_path)
+            else:
+                if key in destination and destination[key] != value:
+                    print(f'{full_path}\t\t-> OVERWRITE ->\t\t{destination[key]} -> {value}')
+                elif key not in destination:
+                    print(f'{full_path}\t\t->    NEW    ->\t\t{value}')
+                destination[key] = value
+        return destination
+
+    def main():
+        if not DEST_PATH.exists():
+            print(f'{DEST_PATH} does not exist. Copying {SRC_PATH} as-is.')
+            DEST_PATH.write_text(SRC_PATH.read_text())
+        else:
+            print(f'{DEST_PATH} exists. Merging contents from {SRC_PATH}.')
+            src_data = load_json(SRC_PATH)
+            dest_data = load_json(DEST_PATH)
+            merged = merge_dicts(src_data, dest_data)
+            save_json(DEST_PATH, merged)
+
+    if __name__ == '__main__':
+        main()
+

@@ -1,0 +1,57 @@
+# NOTE:
+# This job didn't work.  However, exec'ing into the minio container then setting the alias and creating the buckets did
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "revolt.fullname" . }}-create-buckets-{{ now | date "20060102150405" }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-create-buckets
+spec:
+
+  template:
+    metadata:
+      {{- with .Values.web.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        revolt-app: {{ include "revolt.fullname" . }}-create-buckets
+        {{- include "revolt.labels" . | nindent 8 }}
+        {{- with .Values.web.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: create-buckets
+          image: docker.io/minio/minio
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo http://{{ include "revolt.fullname" . }}-minio:9000
+              while ! /usr/bin/mc ready minio; do
+                /usr/bin/mc alias set minio http://{{ include "revolt.fullname" . }}-minio:9000 minioautumn minioautumn
+                echo 'Waiting minio...' && sleep 1
+              done
+              /usr/bin/mc mb minio/revolt-uploads
+              exit 0
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

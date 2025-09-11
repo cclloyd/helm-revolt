@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "revolt.fullname" . }}-autumn"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-autumn
+spec:
+  replicas: {{ .Values.autumn.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "revolt.selectorLabels" . | nindent 6 }}
+      revolt-app: {{ include "revolt.fullname" . }}-autumn
+  template:
+    metadata:
+      {{- with .Values.autumn.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        revolt-app: {{ include "revolt.fullname" . }}-autumn
+        {{- include "revolt.labels" . | nindent 8 }}
+        {{- with .Values.autumn.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: autumn
+          image: "{{ .Values.autumn.image.repository }}:{{ .Values.autumn.image.tag }}"
+          imagePullPolicy: {{ .Values.autumn.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 14704
+              protocol: TCP
+          livenessProbe:
+            {{- if .Values.autumn.livenessProbe }}
+            {{- toYaml .Values.autumn.livenessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.autumn.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.autumn.readinessProbe }}
+            {{- toYaml .Values.autumn.readinessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.autumn.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            {{- end }}
+          {{- with .Values.autumn.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: Revolt.toml
+              mountPath: {{ .Values.autumn.configMountPath }}
+            {{- with .Values.autumn.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "revolt.fullname" . }}-config
+        {{- with .Values.autumn.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.autumn.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.autumn.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.autumn.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
