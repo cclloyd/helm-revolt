@@ -19,6 +19,8 @@ global:
     port: 14704
   january:
     port: 14705
+  gifbox:
+    port: 14706
 
   secret:
     vapid_key: ''
@@ -271,3 +273,25 @@ pushd:
   extra_volumes: []
   extra_volumeMounts: []
   configMountPath: /Revolt.toml
+
+# Tenor proxy
+gifbox:
+  image:
+    repository: ghcr.io/revoltchat/gifbox
+    tag: 20250930-2
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  annotations: {}
+  labels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  livenessProbe:
+  readinessProbe:
+  extra_volumes: []
+  extra_volumeMounts: []
+  configMountPath: /Revolt.toml
+  service:
+    type: ClusterIP
+    annotations: {}

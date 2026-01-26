@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "revolt.fullname" . }}-gifbox"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+    revolt-app: {{ include "revolt.fullname" . }}-gifbox
+spec:
+  replicas: {{ .Values.gifbox.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "revolt.selectorLabels" . | nindent 6 }}
+      revolt-app: {{ include "revolt.fullname" . }}-gifbox
+  template:
+    metadata:
+      {{- with .Values.gifbox.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        revolt-app: {{ include "revolt.fullname" . }}-gifbox
+        {{- include "revolt.labels" . | nindent 8 }}
+        {{- with .Values.gifbox.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: gifbox
+          image: "{{ .Values.gifbox.image.repository }}:{{ .Values.gifbox.image.tag }}"
+          imagePullPolicy: {{ .Values.gifbox.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 14705
+              protocol: TCP
+          livenessProbe:
+            {{- if .Values.gifbox.livenessProbe }}
+            {{- toYaml .Values.gifbox.livenessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.gifbox.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.gifbox.readinessProbe }}
+            {{- toYaml .Values.gifbox.readinessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.gifbox.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            {{- end }}
+          {{- with .Values.gifbox.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: Revolt.toml
+              mountPath: {{ .Values.gifbox.configMountPath }}
+            {{- with .Values.gifbox.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "revolt.fullname" . }}-config
+        {{- with .Values.gifbox.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.gifbox.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.gifbox.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.gifbox.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
