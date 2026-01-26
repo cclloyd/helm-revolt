@@ -1,0 +1,173 @@
+{{- if .Values.global.route.enabled -}}
+{{- $fullName := include "revolt.fullname" . -}}
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-web
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.global.route.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostnames:
+    - '{{ .Values.global.domain }}'
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: {{ $fullName }}-web
+          port: {{ .Values.global.web.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+      timeouts:
+        request: 3600s
+        backendRequest: 3600s
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-api
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.global.route.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostnames:
+    - '{{ .Values.global.domain }}'
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: {{ $fullName }}-api
+          port: {{ .Values.global.api.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      timeouts:
+        request: 3600s
+        backendRequest: 3600s
+
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-autumn
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.global.route.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostnames:
+    - '{{ .Values.global.domain }}'
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: {{ $fullName }}-autumn
+          port: {{ .Values.global.autumn.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /autumn
+      timeouts:
+        request: 3600s
+        backendRequest: 3600s
+
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-january
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.global.route.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostnames:
+    - '{{ .Values.global.domain }}'
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: {{ $fullName }}-january
+          port: {{ .Values.global.january.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /january
+      timeouts:
+        request: 3600s
+        backendRequest: 3600s
+
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-bonfire
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "revolt.labels" . | nindent 4 }}
+  {{- with .Values.global.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.global.route.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostnames:
+    - '{{ .Values.global.domain }}'
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: {{ $fullName }}-bonfire
+          port: {{ .Values.global.bonfire.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /ws
+      timeouts:
+        request: 3600s
+        backendRequest: 3600s
+
+
+{{- end }}

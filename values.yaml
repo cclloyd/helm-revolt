@@ -30,6 +30,12 @@ global:
     className: ''
     annotations: {}
     extra_hosts: []
+
+  route:
+    enabled: false
+    parentRefs: []
+    annotations: {}
+
   serviceAccount:
     create: true
     automount: true
