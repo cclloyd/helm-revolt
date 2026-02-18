@@ -8,7 +8,6 @@ global:
   namespace: 'stoat'
   # Domain name used for access, ex stoat.example.com
   domain: ''
-  invite_only: false
 
   web:
     port: 5000
@@ -249,10 +248,6 @@ mongodb:
     tag: 8.0.13-debian-12-r0
 
 redis:
-#  image:
-#    repository: eqalpha/keydb
-#    tag: x86_64_v6.3.4
-#    pullPolicy: IfNotPresent
   architecture: standalone
   auth:
     enabled: false
