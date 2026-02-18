@@ -1,13 +1,14 @@
-# Config Reference: https://github.com/revoltchat/backend/blob/stable/crates/core/config/Revolt.toml
-# Default values for revolt.
+# Config Reference: https://github.com/stoatchat/backend/blob/stable/crates/core/config/Revolt.toml
+# Default values for stoat.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 
 global:
-  namespace: 'revolt'
-  # Domain name used for access, ex revolt.example.com
+  namespace: 'stoat'
+  # Domain name used for access, ex stoat.example.com
   domain: ''
+  invite_only: false
 
   web:
     port: 5000
@@ -21,6 +22,11 @@ global:
     port: 14705
   gifbox:
     port: 14706
+  all:
+    deployment:
+      annotations: {}
+    service:
+      annotations: {}
 
   secret:
     vapid_key: ''
@@ -44,6 +50,17 @@ global:
     annotations: { }
     name: ''
 
+  smtp:
+    # If host is filled in, you must fill in all other smtp fields
+    host: ''
+    username: ''
+    password: ''
+    from: ''
+    reply_to: ''
+    port: 587
+    use_tls: false
+    use_starttls: false
+
   subcharts:
     mongo:
       enabled: true  # Set to false to use external MongoDB
@@ -62,28 +79,156 @@ global:
       password: 'rabbitpass'
 
 
-revolt:
+
+stoat:
   config:
     production: false
+    api:
+      registration:
+        invite_only: false
+      smtp:
+        host: ''
+        port: 587
+        use_tls: true
+        username: ''
+        password: ''
+        from_address: ''
+        reply_to: ''
+      security:
+        authifier_shield_key: ''
+        voso_legacy_token: ''
+        trust_cloudflare: false
+        easypwned: ''
+        captcha:
+          hcaptcha_key: ''
+          hcaptcha_sitekey: ''
+      workers:
+        max_concurrent_connections: 50
+      users: {}
+    pushd:
+      production: true
+      mass_mention_chunk_size: 200
+      exchange: 'revolt.notifications'
+      message_queue: 'notifications.origin.message'
+      mass_mention_queue: 'notifications.origin.mass_mention'
+      fr_accepted_queue: 'notifications.ingest.fr_accepted'
+      fr_received_queue: 'notifications.ingest.fr_received'
+      generic_queue: 'notifications.ingest.generic'
+      ack_queue: 'notifications.process.ack'
+      vapid:
+        queue: 'notifications.outbound.vapid'
+        private_key: ''
+        public_key: ''
+      fcm:
+        queue: 'notifications.outbound.fcm'
+        key_type: ''
+        project_id: ''
+        private_key_id: ''
+        private_key: ''
+        client_email: ''
+        client_id: ''
+        auth_uri: ''
+        token_uri: ''
+        auth_provider_x509_cert_url: ''
+        client_x509_cert_url: ''
+      apn:
+        sandbox: false
+        queue: 'notifications.outbound.apn'
+        pkcs8: ''
+        key_id: ''
+        team_id: ''
     files:
-      type: 's3'
+      encryption_key: ''
+      webp_quality: 80.0
+      blocked_mime_types: []
+      clamd_host: ''
+      scan_mime_types:
+        - 'application/vnd.microsoft.portable-executable'
+        - 'application/vnd.android.package-archive'
+        - 'application/zip'
+      limit:
+        min_file_size: 1
+        min_resolution:
+          - 1
+          - 1
+        max_mega_pixels: 40
+        max_pixel_side: 10000
+      preview:
+        attachments:
+          - 1280
+          - 1280
+        avatars:
+          - 128
+          - 128
+        backgrounds:
+          - 1280
+          - 720
+        icons:
+          - 128
+          - 128
+        banners:
+          - 480
+          - 480
+        emojis:
+          - 128
+          - 128
       s3:
-        region: 'us-east-1'
-        bucket: 'revolt'
-        access_key: 'minioautumn'
-        secret_key: 'minioautumn'
+        endpoint: ''
         path_style_buckets: false
-
+        region: 'minio'
+        access_key_id: 'minioautumn'
+        secret_access_key: 'minioautumn'
+        default_bucket: 'revolt-uploads'
+    features:
+      webhooks_enabled: false
+      mass_mentions_send_notifications: true
+      mass_mentions_enabled: true
+      limits:
+        global:
+          group_size: 100
+          message_embeds: 5
+          message_replies: 5
+          message_reactions: 20
+          server_emoji: 100
+          server_roles: 200
+          server_channels: 200
+          new_user_hours: 72
+          body_limit_size: 20000000
+        new_user:
+          outgoing_friend_requests: 5
+          bots: 2
+          message_length: 2000
+          message_attachments: 5
+          servers: 50
+          file_upload_size_limit:
+            attachments: 20000000
+            avatars: 4000000
+            backgrounds: 6000000
+            icons: 2500000
+            banners: 6000000
+            emojis: 500000
+        default:
+          outgoing_friend_requests: 10
+          bots: 5
+          message_length: 2000
+          message_attachments: 5
+          servers: 100
+          file_upload_size_limit:
+            attachments: 20000000
+            avatars: 4000000
+            backgrounds: 6000000
+            icons: 2500000
+            banners: 6000000
+            emojis: 500000
+      advanced:
+        process_message_delay_limit: 5
     sentry:
-      dsn: ''
-      traces_sample_rate: 0.0
-
-    settings:
-      allow_registration: true
-      invite_only: false
-      minimum_username_length: 2
-      maximum_username_length: 32
-
+      api: ''
+      events: ''
+      files: ''
+      proxy: ''
+      pushd: ''
+      crond: ''
 
 
 
@@ -93,7 +238,15 @@ mongodb:
     enabled: false
   persistence:
     enabled: false
-
+    resourcePolicy: keep
+    persistentVolumeClaimRetentionPolicy:
+      enabled: true
+      whenDeleted: Retain
+      whenScaled: Retain
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mongodb
+    tag: 8.0.13-debian-12-r0
 
 redis:
 #  image:
@@ -105,8 +258,11 @@ redis:
     enabled: false
   master:
     persistence:
-      enabled: false
-
+      enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/redis
+    tag: 8.2.1-debian-12-r0
 
 rabbitmq:
   replicaCount: 1
@@ -114,18 +270,33 @@ rabbitmq:
     username: 'rabbituser'
     password: 'rabbitpass'
   persistence:
-    enabled: false
-
+    enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/rabbitmq
+    tag: 4.1.3-debian-12-r1
 
 minio:
   mode: standalone
   rootUser: minioautumn
   rootPassword: minioautumn
   persistence:
-    enabled: false
+    enabled: true
+    annotations:
+      helm.sh/resource-policy: keep
   auth:
     rootUser: 'minioautumn'
     rootPassword: 'minioautumn'
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/minio
+    tag: 2025.7.23-debian-12-r3
+  console:
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/minio-object-browser
+      tag: 2.0.2-debian-12-r3
+
 
 
 # Web app
@@ -145,11 +316,11 @@ web:
   readinessProbe:
   service:
     type: ClusterIP
+    annotations: {}
   extra_volumes: []
   extra_volumeMounts: []
 
-
-# Revolt API Server
+# Stoat API Server
 api:
   image:
     repository: ghcr.io/revoltchat/server
@@ -166,10 +337,10 @@ api:
   readinessProbe:
   service:
     type: ClusterIP
+    annotations: {}
   extra_volumes: []
   extra_volumeMounts: []
   configMountPath: /Revolt.toml
-
 
 # Events service
 bonfire:
@@ -188,10 +359,10 @@ bonfire:
   readinessProbe:
   service:
     type: ClusterIP
+    annotations: {}
   extra_volumes: []
   extra_volumeMounts: []
   configMountPath: /Revolt.toml
-
 
 # File server
 autumn:
@@ -211,6 +382,7 @@ autumn:
   readinessProbe:
   service:
     type: ClusterIP
+    annotations: {}
   extra_volumes: []
   extra_volumeMounts: []
   configMountPath: /Revolt.toml
@@ -232,6 +404,7 @@ january:
   readinessProbe:
   service:
     type: ClusterIP
+    annotations: {}
   extra_volumes: []
   extra_volumeMounts: []
   configMountPath: /Revolt.toml

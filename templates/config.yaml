@@ -1,18 +1,19 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "revolt.fullname" . }}-config
+  name: {{ include "stoat.fullname" . }}-config
   namespace: {{ .Values.global.namespace }}
 data:
   Revolt.toml: |
-    production = {{ .Values.revolt.config.production }}
+    # Reference: https://github.com/stoatchat/stoatchat/blob/stable/crates/core/config/Revolt.toml
+    production = {{ .Values.stoat.config.production }}
 
     [database]
-    mongodb = {{ .Values.global.subcharts.mongo.connection_url | default (printf "mongodb://%s-mongodb" (include "revolt.fullname" .)) | quote }}
-    redis = {{ .Values.global.subcharts.redis.connection_url | default (printf "redis://%s-redis-master" (include "revolt.fullname" .)) | quote }}
+    mongodb = {{ .Values.global.subcharts.mongo.connection_url | default (printf "mongodb://%s-mongodb" .Release.Name) | quote }}
+    redis = {{ .Values.global.subcharts.redis.connection_url | default (printf "redis://%s-redis-master" .Release.Name) | quote }}
 
     [rabbit]
-    host = {{ .Values.global.subcharts.rabbitmq.host | default (printf "%s-rabbitmq" (include "revolt.fullname" .)) | quote }}
+    host = {{ .Values.global.subcharts.rabbitmq.host | default (printf "%s-rabbitmq" .Release.Name) | quote }}
     port = {{ .Values.global.subcharts.rabbitmq.port }}
     username = {{ .Values.global.subcharts.rabbitmq.username | quote }}
     password = {{ .Values.global.subcharts.rabbitmq.password | quote }}
@@ -30,22 +31,27 @@ data:
 
     [files]
     encryption_key = {{ .Values.global.secret.encryption_key | quote }}
-    type = {{ .Values.revolt.config.files.type | quote }}
 
     [files.s3]
-    endpoint = {{ .Values.global.subcharts.minio.connection_url | default (printf "redis://%s-minio:9000" (include "revolt.fullname" .)) | quote }}
-    region = {{ .Values.revolt.config.files.s3.region | quote }}
-    bucket = {{ .Values.revolt.config.files.s3.bucket | quote }}
-    access_key = {{ .Values.revolt.config.files.s3.access_key | quote }}
-    secret_key = {{ .Values.revolt.config.files.s3.secret_key | quote }}
-    path_style_buckets = {{ .Values.revolt.config.files.s3.path_style_buckets }}
+    endpoint = {{ .Values.global.subcharts.minio.connection_url | default (printf "http://%s-minio:9000" .Release.Name) | quote }}
+    region = {{ .Values.stoat.config.files.s3.region | quote }}
+    default_bucket = {{ .Values.stoat.config.files.s3.default_bucket | quote }}
+    access_key_id = {{ .Values.stoat.config.files.s3.access_key_id | quote }}
+    secret_access_key = {{ .Values.stoat.config.files.s3.secret_access_key | quote }}
+    path_style_buckets = {{ .Values.stoat.config.files.s3.path_style_buckets }}
 
-    [sentry]
-    dsn = {{ .Values.revolt.config.sentry.dsn | quote }}
-    traces_sample_rate = {{ .Values.revolt.config.sentry.traces_sample_rate }}
+    [api]
 
-    [settings]
-    allow_registration = {{ .Values.revolt.config.settings.allow_registration }}
-    invite_only = {{ .Values.revolt.config.settings.invite_only }}
-    minimum_username_length = {{ .Values.revolt.config.settings.minimum_username_length }}
-    maximum_username_length = {{ .Values.revolt.config.settings.maximum_username_length }}
+    [api.registration]
+    invite_only = {{ .Values.stoat.config.api.registration.invite_only }}
+
+    [api.smtp]
+    host = {{ .Values.stoat.config.api.smtp.host | quote }}
+    port = {{ .Values.stoat.config.api.smtp.port | quote }}
+    username = {{ .Values.stoat.config.api.smtp.username | quote }}
+    password = {{ .Values.stoat.config.api.smtp.password | quote }}
+    from_address = {{ .Values.stoat.config.api.smtp.from_address | quote }}
+    reply_to = {{ .Values.stoat.config.api.smtp.reply_to | quote }}
+    use_tls = {{ .Values.stoat.config.api.smtp.use_tls | quote }}
+
+{{- /* TODO: Support more config options */ -}}

@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ include "revolt.fullname" . }}-autumn"
+  name: "{{ include "stoat.fullname" . }}-autumn"
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "revolt.labels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-autumn
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: autumn
+  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.autumn.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.autumn.replicaCount }}
   selector:
     matchLabels:
-      {{- include "revolt.selectorLabels" . | nindent 6 }}
-      revolt-app: {{ include "revolt.fullname" . }}-autumn
+      {{- include "stoat.selectorLabels" . | nindent 6 }}
+      stoat-app: autumn
   template:
     metadata:
-      {{- with .Values.autumn.annotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        revolt-app: {{ include "revolt.fullname" . }}-autumn
-        {{- include "revolt.labels" . | nindent 8 }}
+        stoat-app: autumn
+        {{- include "stoat.labels" . | nindent 8 }}
         {{- with .Values.autumn.labels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -65,7 +65,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "revolt.fullname" . }}-config
+            name: {{ include "stoat.fullname" . }}-config
         {{- with .Values.autumn.extra_volumes }}
         {{ toYaml . | nindent 8 }}
         {{- end }}

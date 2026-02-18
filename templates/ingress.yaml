@@ -1,5 +1,5 @@
 {{- if .Values.global.ingress.enabled -}}
-{{- $fullName := include "revolt.fullname" . -}}
+{{- $fullName := include "stoat.fullname" . -}}
 
 ---
 {{- if and .Values.global.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
@@ -19,7 +19,7 @@ metadata:
   name: "{{ $fullName }}"
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "revolt.labels" . | nindent 4 }}
+    {{- include "stoat.labels" . | nindent 4 }}
   {{- with .Values.global.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
   ingressClassName: {{ .Values.global.ingress.className }}
   {{- end }}
   tls:
-    - secretName: "tls-{{ include "revolt.fullname" . }}"
+    - secretName: "tls-{{ include "stoat.fullname" . }}"
       hosts:
       - {{ .Values.global.domain }}
   rules:
@@ -46,7 +46,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: '{{ include "revolt.fullname" . }}-api'
+                name: '{{ include "stoat.fullname" . }}-api'
                 port:
                   name: http
 
@@ -54,7 +54,7 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: '{{ include "revolt.fullname" . }}-bonfire'
+                name: '{{ include "stoat.fullname" . }}-bonfire'
                 port:
                   name: http
 
@@ -62,7 +62,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: '{{ include "revolt.fullname" . }}-autumn'
+                name: '{{ include "stoat.fullname" . }}-autumn'
                 port:
                   name: http
 
@@ -70,7 +70,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: '{{ include "revolt.fullname" . }}-january'
+                name: '{{ include "stoat.fullname" . }}-january'
                 port:
                   name: http
 
@@ -78,7 +78,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: '{{ include "revolt.fullname" . }}-web'
+                name: '{{ include "stoat.fullname" . }}-web'
                 port:
                   name: http
 

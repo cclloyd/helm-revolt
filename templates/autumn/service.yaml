@@ -1,11 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "revolt.fullname" . }}-autumn
+  name: {{ include "stoat.fullname" . }}-autumn
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "revolt.labels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-autumn
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: autumn
+  {{- with (merge (.Values.global.all.service.annotations | default dict) (.Values.autumn.service.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
   type: {{ .Values.autumn.service.type }}
   ports:
@@ -14,5 +18,5 @@ spec:
       protocol: TCP
       port: {{ .Values.global.autumn.port }}
   selector:
-    {{- include "revolt.selectorLabels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-autumn
+    {{- include "stoat.selectorLabels" . | nindent 4 }}
+    stoat-app: autumn

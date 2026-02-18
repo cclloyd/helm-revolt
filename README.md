@@ -3,9 +3,9 @@
   <img src="https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png" width="60" style="vertical-align: middle;" />
 </p>
 
-# Revolt Helm Chart
+# Stoat Helm Chart
 
-This chart provides a means of deploying Revolt to kubernetes.
+This chart provides a means of deploying Stoat to kubernetes.
 
 ---
 
@@ -24,8 +24,8 @@ To use the minimal setup, you will require
 2. Fill out required config
     ```yaml
     global:
-      namespace: 'revolt'
-      domain: 'revolt.example.com'
+      namespace: 'stoat'
+      domain: 'stoat.example.com'
       ingress:
         enabled: true
         className: nginx
@@ -44,7 +44,7 @@ To use the minimal setup, you will require
         vapid_public_key: ''
         encryption_key: ''
     ```
-3. Run `helm install ./ revolt -f my_values.yaml`
+3. Run `helm install ./ stoat -f my_values.yaml`
 4. Once it's done setting itself, up, access it at your external URL. It may take a few minutes to spin up from scratch.
 
 Congrats, you have a minimal working setup. This is NOT production ready however.
@@ -94,8 +94,8 @@ global:
 
 | Chart Option                                  | Description                                              | Default        |
 |-----------------------------------------------|----------------------------------------------------------|----------------|
-| `global.namespace`                            | Namespace for the chart services                         | `'revolt'`     |
-| `global.domain`  **REQUIRED**                 | Domain name used for access (e.g. ) `revolt.example.com` | `''`           |
+| `global.namespace`                            | Namespace for the chart services                         | `'stoat'`     |
+| `global.domain`  **REQUIRED**                 | Domain name used for access (e.g. ) `stoat.example.com` | `''`           |
 | `global.secret.vapid_key` **REQUIRED**        | VAPID private key for push notifications                 | `''`           |
 | `global.secret.vapid_public_key` **REQUIRED** | VAPID public key for push notifications                  | `''`           |
 | `global.secret.encryption_key` **REQUIRED**   | Encryption key for sensitive data                        | `''`           |
@@ -178,7 +178,7 @@ These are the default values we supply for the subcharts.
 | `minio.auth.rootUser`       | MinIO root user for auth section     | minioautumn |
 | `minio.auth.rootPassword`   | MinIO root password for auth section | minioautumn |
 
-### Revolt Services
+### Stoat Services
 
 ---
 
@@ -186,7 +186,7 @@ These are the default values we supply for the subcharts.
 
 | config                   | description                  | default                   |
 |--------------------------|------------------------------|---------------------------|
-| `web.image.repository`   | Image repository             | ghcr.io/revoltchat/client |
+| `web.image.repository`   | Image repository             | ghcr.io/stoatchat/client |
 | `web.image.tag`          | Image tag                    | master                    |
 | `web.image.pullPolicy`   | Image pull policy            | Always                    |
 | `web.annotations`        | Additional pod annotations   | `{}`                      |
@@ -206,7 +206,7 @@ These are the default values we supply for the subcharts.
 
 | config                   | description                  | default                   |
 |--------------------------|------------------------------|---------------------------|
-| `api.image.repository`   | Image repository             | ghcr.io/revoltchat/server |
+| `api.image.repository`   | Image repository             | ghcr.io/stoatchat/server |
 | `api.image.tag`          | Image tag                    | 20250210-1                |
 | `api.image.pullPolicy`   | Image pull policy            | IfNotPresent              |
 | `api.replicaCount`       | Number of replicas           | 1                         |
@@ -221,13 +221,13 @@ These are the default values we supply for the subcharts.
 | `api.service.type`       | Service type                 | ClusterIP                 |
 | `api.extra_volumes`      | Additional pod volumes       | `[]`                      |
 | `api.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                      |
-| `api.configMountPath`    | Config mount path in pod     | /Revolt.toml              |
+| `api.configMountPath`    | Config mount path in pod     | /Stoat.toml              |
 
 ## Bonfire
 
 | config                       | description                  | default                    |
 |------------------------------|------------------------------|----------------------------|
-| `bonfire.image.repository`   | Image repository             | ghcr.io/revoltchat/bonfire |
+| `bonfire.image.repository`   | Image repository             | ghcr.io/stoatchat/bonfire |
 | `bonfire.image.tag`          | Image tag                    | 20250210-1                 |
 | `bonfire.image.pullPolicy`   | Image pull policy            | IfNotPresent               |
 | `bonfire.replicaCount`       | Number of replicas           | 1                          |
@@ -242,13 +242,13 @@ These are the default values we supply for the subcharts.
 | `bonfire.service.type`       | Service type                 | ClusterIP                  |
 | `bonfire.extra_volumes`      | Additional pod volumes       | `[]`                       |
 | `bonfire.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                       |
-| `bonfire.configMountPath`    | Config mount path in pod     | /Revolt.toml               |
+| `bonfire.configMountPath`    | Config mount path in pod     | /Stoat.toml               |
 
 ## Autumn
 
 | config                      | description                  | default                   |
 |-----------------------------|------------------------------|---------------------------|
-| `autumn.image.repository`   | Image repository             | ghcr.io/revoltchat/autumn |
+| `autumn.image.repository`   | Image repository             | ghcr.io/stoatchat/autumn |
 | `autumn.image.tag`          | Image tag                    | 20250210-1                |
 | `autumn.image.pullPolicy`   | Image pull policy            | IfNotPresent              |
 | `autumn.replicaCount`       | Number of replicas           | 1                         |
@@ -263,13 +263,13 @@ These are the default values we supply for the subcharts.
 | `autumn.service.type`       | Service type                 | ClusterIP                 |
 | `autumn.extra_volumes`      | Additional pod volumes       | `[]`                      |
 | `autumn.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                      |
-| `autumn.configMountPath`    | Config mount path in pod     | /Revolt.toml              |
+| `autumn.configMountPath`    | Config mount path in pod     | /Stoat.toml              |
 
 ## January
 
 | config                       | description                  | default                    |
 |------------------------------|------------------------------|----------------------------|
-| `january.image.repository`   | Image repository             | ghcr.io/revoltchat/january |
+| `january.image.repository`   | Image repository             | ghcr.io/stoatchat/january |
 | `january.image.tag`          | Image tag                    | 20250210-1                 |
 | `january.image.pullPolicy`   | Image pull policy            | IfNotPresent               |
 | `january.replicaCount`       | Number of replicas           | 1                          |
@@ -284,13 +284,13 @@ These are the default values we supply for the subcharts.
 | `january.service.type`       | Service type                 | ClusterIP                  |
 | `january.extra_volumes`      | Additional pod volumes       | `[]`                       |
 | `january.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                       |
-| `january.configMountPath`    | Config mount path in pod     | /Revolt.toml               |
+| `january.configMountPath`    | Config mount path in pod     | /Stoat.toml               |
 
 ## Crond
 
 | config                     | description                  | default                  |
 |----------------------------|------------------------------|--------------------------|
-| `crond.image.repository`   | Image repository             | ghcr.io/revoltchat/crond |
+| `crond.image.repository`   | Image repository             | ghcr.io/stoatchat/crond |
 | `crond.image.tag`          | Image tag                    | 20250210-1-debug         |
 | `crond.image.pullPolicy`   | Image pull policy            | IfNotPresent             |
 | `crond.replicaCount`       | Number of replicas           | 1                        |
@@ -304,13 +304,13 @@ These are the default values we supply for the subcharts.
 | `crond.readinessProbe`     | Readiness probe              |                          |
 | `crond.extra_volumes`      | Additional pod volumes       | `[]`                     |
 | `crond.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                     |
-| `crond.configMountPath`    | Config mount path in pod     | /Revolt.toml             |
+| `crond.configMountPath`    | Config mount path in pod     | /Stoat.toml             |
 
 ## Pushd
 
 | config                     | description                  | default                  |
 |----------------------------|------------------------------|--------------------------|
-| `pushd.image.repository`   | Image repository             | ghcr.io/revoltchat/pushd |
+| `pushd.image.repository`   | Image repository             | ghcr.io/stoatchat/pushd |
 | `pushd.image.tag`          | Image tag                    | 20250210-1               |
 | `pushd.image.pullPolicy`   | Image pull policy            | IfNotPresent             |
 | `pushd.replicaCount`       | Number of replicas           | 1                        |
@@ -324,5 +324,5 @@ These are the default values we supply for the subcharts.
 | `pushd.readinessProbe`     | Readiness probe              |                          |
 | `pushd.extra_volumes`      | Additional pod volumes       | `[]`                     |
 | `pushd.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                     |
-| `pushd.configMountPath`    | Config mount path in pod     | /Revolt.toml             |
+| `pushd.configMountPath`    | Config mount path in pod     | /Stoat.toml             |
 

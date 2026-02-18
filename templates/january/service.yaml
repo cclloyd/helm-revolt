@@ -1,18 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "revolt.fullname" . }}-gifbox
+  name: {{ include "stoat.fullname" . }}-january
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "revolt.labels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-gifbox
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: january
+  {{- with (merge (.Values.global.all.service.annotations | default dict) (.Values.january.service.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
-  type: {{ .Values.gifbox.service.type }}
+  type: {{ .Values.january.service.type }}
   ports:
     - name: http
       targetPort: http
       protocol: TCP
-      port: {{ .Values.global.gifbox.port }}
+      port: {{ .Values.global.january.port }}
   selector:
-    {{- include "revolt.selectorLabels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-gifbox
+    {{- include "stoat.selectorLabels" . | nindent 4 }}
+    stoat-app: january

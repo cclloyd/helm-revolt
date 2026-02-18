@@ -1,6 +1,6 @@
 apiVersion: v2
-name: revolt
-description: Revolt Chat self hosted server
+name: stoat
+description: Stoat Chat self hosted server
 
 # A chart can be either an 'application' or a 'library' chart.
 #

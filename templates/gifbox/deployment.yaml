@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ include "revolt.fullname" . }}-gifbox"
+  name: "{{ include "stoat.fullname" . }}-gifbox"
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "revolt.labels" . | nindent 4 }}
-    revolt-app: {{ include "revolt.fullname" . }}-gifbox
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: gifbox
+  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.gifbox.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.gifbox.replicaCount }}
   selector:
     matchLabels:
-      {{- include "revolt.selectorLabels" . | nindent 6 }}
-      revolt-app: {{ include "revolt.fullname" . }}-gifbox
+      {{- include "stoat.selectorLabels" . | nindent 6 }}
+      stoat-app: gifbox
   template:
     metadata:
-      {{- with .Values.gifbox.annotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        revolt-app: {{ include "revolt.fullname" . }}-gifbox
-        {{- include "revolt.labels" . | nindent 8 }}
+        stoat-app: gifbox
+        {{- include "stoat.labels" . | nindent 8 }}
         {{- with .Values.gifbox.labels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -65,7 +65,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "revolt.fullname" . }}-config
+            name: {{ include "stoat.fullname" . }}-config
         {{- with .Values.gifbox.extra_volumes }}
         {{ toYaml . | nindent 8 }}
         {{- end }}
