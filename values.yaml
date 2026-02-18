@@ -1,4 +1,4 @@
-# Config Reference: https://github.com/stoatchat/backend/blob/stable/crates/core/config/Revolt.toml
+# Config Reference: https://github.com/stoatchat/stoatchat/blob/stable/crates/core/config/Revolt.toml
 # Default values for stoat.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -80,6 +80,7 @@ global:
 
 
 stoat:
+  # Reference: https://github.com/stoatchat/stoatchat/blob/stable/crates/core/config/Revolt.toml
   config:
     production: false
     api:

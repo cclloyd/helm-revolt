@@ -51,10 +51,11 @@ To use the minimal setup, you will require
 4. Run `helm install ./ stoat -f my_values.yaml`
 5. Once it's done setting itself, up, access it at your external URL. It may take a few minutes to spin up from scratch.
 
-Congrats, you have a minimal working setup.
+Congrats, you have a minimal working setup. A slightly more complete setup can be seen
+at [docs/example_values.yaml](docs/example_values.yaml)
 
-However, you should not consider this setup production ready until you set up authentication for the various external
-charts.
+However, you should not consider this setup production ready until the services provided by the external charts are
+supplied elsewhere and with proper authentication.
 
 ## Persistence
 
