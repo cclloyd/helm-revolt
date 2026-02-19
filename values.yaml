@@ -10,7 +10,7 @@ global:
   domain: ''
 
   web:
-    port: 5000
+    port: 80
   api:
     port: 14702
   bonfire:
@@ -486,7 +486,6 @@ livekit:
     type: ClusterIP
     annotations: {}
 
-# LiveKit proxy
 voice:
   image:
     repository: ghcr.io/stoatchat/voice-ingress
