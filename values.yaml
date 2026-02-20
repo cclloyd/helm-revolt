@@ -297,9 +297,9 @@ minio:
 # Web app
 web:
   image:
-    repository: ghcr.io/cclloyd/stoat-for-web
-    tag: stoat-for-web-v0.2.1
-    pullPolicy: IfNotPresent
+    repository: ghcr.io/stoatchat/for-web
+    tag: main
+    pullPolicy: Always
   annotations: {}
   labels: {}
   nodeSelector: {}

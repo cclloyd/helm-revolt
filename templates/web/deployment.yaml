@@ -37,7 +37,17 @@ spec:
             - name: HOSTNAME
               value: 'https://{{ .Values.global.domain }}'
             - name: REVOLT_PUBLIC_URL
+              value: 'https://{{ .Values.global.domain }}'
+            - name: VITE_API_URL
               value: 'https://{{ .Values.global.domain }}/api'
+            - name: VITE_WS_URL
+              value: 'wss://{{ .Values.global.domain }}/ws'
+            - name: VITE_MEDIA_URL
+              value: 'https://{{ .Values.global.domain }}/autumn'
+            - name: VITE_PROXY_URL
+              value: 'https://{{ .Values.global.domain }}/january'
+            - name: VITE_HCAPTCHA_SITEKEY
+              value: {{ .Values.stoat.config.api.security.captcha.hcaptcha_sitekey | quote }}
           livenessProbe:
             {{- if .Values.web.livenessProbe }}
             {{- toYaml .Values.web.livenessProbe | nindent 12 }}
