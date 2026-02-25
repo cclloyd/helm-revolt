@@ -8,6 +8,10 @@ global:
   namespace: 'stoat'
   # Domain name used for access, ex stoat.example.com
   domain: ''
+  version:
+    app: 'v0.11.5'
+    web: 'v0.11.5'
+    livekit: 'v1.9.9'
 
   web:
     port: 5000
@@ -319,7 +323,7 @@ web:
 api:
   image:
     repository: ghcr.io/stoatchat/api
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -341,7 +345,7 @@ api:
 bonfire:
   image:
     repository: ghcr.io/stoatchat/events
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -363,7 +367,7 @@ bonfire:
 autumn:
   image:
     repository: ghcr.io/stoatchat/file-server
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -386,7 +390,7 @@ autumn:
 january:
   image:
     repository: ghcr.io/stoatchat/proxy
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -408,7 +412,7 @@ january:
 crond:
   image:
     repository: ghcr.io/stoatchat/crond
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -427,7 +431,7 @@ crond:
 pushd:
   image:
     repository: ghcr.io/stoatchat/pushd
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -446,7 +450,7 @@ pushd:
 gifbox:
   image:
     repository: ghcr.io/stoatchat/gifbox
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -468,7 +472,7 @@ gifbox:
 livekit:
   image:
     repository: ghcr.io/stoatchat/livekit-server
-    tag: v1.9.9
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}
@@ -489,7 +493,7 @@ livekit:
 voice:
   image:
     repository: ghcr.io/stoatchat/voice-ingress
-    tag: v0.11.5
+    tag: ''
     pullPolicy: IfNotPresent
   replicaCount: 1
   annotations: {}

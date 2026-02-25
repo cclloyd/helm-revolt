@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: crond
-          image: "{{ .Values.crond.image.repository }}:{{ .Values.crond.image.tag }}"
+          image: "{{ .Values.crond.image.repository }}:{{ default .Values.global.version.app .Values.crond.image.tag }}"
           imagePullPolicy: {{ .Values.crond.image.pullPolicy }}
           ports:
             - name: http

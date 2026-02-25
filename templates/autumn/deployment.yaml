@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: autumn
-          image: "{{ .Values.autumn.image.repository }}:{{ .Values.autumn.image.tag }}"
+          image: "{{ .Values.autumn.image.repository }}:{{ default .Values.global.version.app .Values.autumn.image.tag }}"
           imagePullPolicy: {{ .Values.autumn.image.pullPolicy }}
           ports:
             - name: http

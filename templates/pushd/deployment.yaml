@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: pushd
-          image: "{{ .Values.pushd.image.repository }}:{{ .Values.pushd.image.tag }}"
+          image: "{{ .Values.pushd.image.repository }}:{{ default .Values.global.version.app .Values.pushd.image.tag }}"
           imagePullPolicy: {{ .Values.pushd.image.pullPolicy }}
           env:
             - name: RUST_BACKTRACE

@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: january
-          image: "{{ .Values.january.image.repository }}:{{ .Values.january.image.tag }}"
+          image: "{{ .Values.january.image.repository }}:{{ default .Values.global.version.app .Values.january.image.tag }}"
           imagePullPolicy: {{ .Values.january.image.pullPolicy }}
           ports:
             - name: http

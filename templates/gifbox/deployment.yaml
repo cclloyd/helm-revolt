@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: gifbox
-          image: "{{ .Values.gifbox.image.repository }}:{{ .Values.gifbox.image.tag }}"
+          image: "{{ .Values.gifbox.image.repository }}:{{ default .Values.global.version.app .Values.gifbox.image.tag }}"
           imagePullPolicy: {{ .Values.gifbox.image.pullPolicy }}
           ports:
             - name: http

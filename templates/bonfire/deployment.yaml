@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: bonfire
-          image: "{{ .Values.bonfire.image.repository }}:{{ .Values.bonfire.image.tag }}"
+          image: "{{ .Values.bonfire.image.repository }}:{{ default .Values.global.version.app .Values.bonfire.image.tag }}"
           imagePullPolicy: {{ .Values.bonfire.image.pullPolicy }}
           ports:
             - name: http
