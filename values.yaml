@@ -205,7 +205,7 @@ stoat:
           server_roles: 200
           server_channels: 200
           new_user_hours: 72
-          body_limit_size: 20000000
+          body_limit_size: 20_000_000
         new_user:
           outgoing_friend_requests: 5
           bots: 2
@@ -213,12 +213,12 @@ stoat:
           message_attachments: 5
           servers: 50
           file_upload_size_limit:
-            attachments: 20000000
-            avatars: 4000000
-            backgrounds: 6000000
-            icons: 2500000
-            banners: 6000000
-            emojis: 500000
+            attachments: 20_000_000
+            avatars: 4_000_000
+            backgrounds: 6_000_000
+            icons: 2_500_000
+            banners: 6_000_000
+            emojis: 500_000
         default:
           outgoing_friend_requests: 10
           bots: 5
@@ -226,12 +226,12 @@ stoat:
           message_attachments: 5
           servers: 100
           file_upload_size_limit:
-            attachments: 20000000
-            avatars: 4000000
-            backgrounds: 6000000
-            icons: 2500000
-            banners: 6000000
-            emojis: 500000
+            attachments: 20_000_000
+            avatars: 4_000_000
+            backgrounds: 6_000_000
+            icons: 2_500_000
+            banners: 6_000_000
+            emojis: 500_000
       advanced:
         process_message_delay_limit: 5
     sentry:

@@ -29,10 +29,6 @@ spec:
         - name: crond
           image: "{{ .Values.crond.image.repository }}:{{ default .Values.global.version.app .Values.crond.image.tag }}"
           imagePullPolicy: {{ .Values.crond.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 8000
-              protocol: TCP
           {{- if .Values.crond.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.crond.livenessProbe | nindent 12 }}
