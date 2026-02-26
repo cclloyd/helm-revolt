@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "stoat.fullname" . }}-livekit"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: livekit
+  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.livekit.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.livekit.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "stoat.selectorLabels" . | nindent 6 }}
+      stoat-app: livekit
+  template:
+    metadata:
+      labels:
+        stoat-app: livekit
+        {{- include "stoat.labels" . | nindent 8 }}
+        {{- with .Values.livekit.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: livekit
+          image: "{{ .Values.livekit.image.repository }}:{{ default .Values.global.version.livekit .Values.livekit.image.tag }}"
+          imagePullPolicy: {{ .Values.livekit.image.pullPolicy }}
+          args:
+            - '--config'
+            - '/etc/livekit.yml'
+          ports:
+            - name: http
+              containerPort: {{ .Values.global.livekit.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- if .Values.livekit.livenessProbe }}
+            {{- toYaml .Values.livekit.livenessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.livekit.port }}
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.livekit.readinessProbe }}
+            {{- toYaml .Values.livekit.readinessProbe | nindent 12 }}
+            {{- else }}
+            tcpSocket:
+              port: {{ .Values.global.livekit.port }}
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            {{- end }}
+          {{- with .Values.livekit.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: livekit.yml
+              mountPath: {{ .Values.livekit.configMountPath }}
+            {{- with .Values.livekit.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ include "stoat.fullname" . }}-config
+        {{- with .Values.livekit.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.livekit.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.livekit.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.livekit.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

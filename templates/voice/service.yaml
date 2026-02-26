@@ -1,22 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "stoat.fullname" . }}-bonfire
+  name: {{ include "stoat.fullname" . }}-voice
   namespace: {{ .Values.global.namespace }}
   labels:
     {{- include "stoat.labels" . | nindent 4 }}
-    stoat-app: bonfire
-  {{- with (merge (.Values.global.all.service.annotations | default dict) (.Values.bonfire.service.annotations | default dict)) }}
+    stoat-app: voice-ingress
+  {{- with (merge (.Values.global.all.service.annotations | default dict) (.Values.voice.service.annotations | default dict)) }}
   annotations:
     {{- toYaml . | nindent 8 }}
   {{- end }}
 spec:
-  type: {{ .Values.bonfire.service.type }}
+  type: {{ .Values.voice.service.type }}
   ports:
     - name: http
       targetPort: http
       protocol: TCP
-      port: {{ .Values.global.bonfire.port }}
+      port: {{ .Values.global.voice.port }}
   selector:
     {{- include "stoat.selectorLabels" . | nindent 4 }}
-    stoat-app: bonfire
+    stoat-app: voice-ingress

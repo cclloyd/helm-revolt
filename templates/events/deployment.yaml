@@ -1,34 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ include "stoat.fullname" . }}-bonfire"
+  name: "{{ include "stoat.fullname" . }}-events"
   namespace: {{ .Values.global.namespace }}
   labels:
     {{- include "stoat.labels" . | nindent 4 }}
-    stoat-app: bonfire
-  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.bonfire.annotations | default dict)) }}
+    stoat-app: events
+  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.events.annotations | default dict)) }}
   annotations:
     {{- toYaml . | nindent 8 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.bonfire.replicaCount }}
+  replicas: {{ .Values.events.replicaCount }}
   selector:
     matchLabels:
       {{- include "stoat.selectorLabels" . | nindent 6 }}
-      stoat-app: bonfire
+      stoat-app: events
   template:
     metadata:
       labels:
-        stoat-app: bonfire
+        stoat-app: events
         {{- include "stoat.labels" . | nindent 8 }}
-        {{- with .Values.bonfire.labels }}
+        {{- with .Values.events.labels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       containers:
-        - name: bonfire
-          image: "{{ .Values.bonfire.image.repository }}:{{ default .Values.global.version.app .Values.bonfire.image.tag }}"
-          imagePullPolicy: {{ .Values.bonfire.image.pullPolicy }}
+        - name: events
+          image: "{{ .Values.events.image.repository }}:{{ default .Values.global.version.app .Values.events.image.tag }}"
+          imagePullPolicy: {{ .Values.events.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 14703
@@ -37,50 +37,50 @@ spec:
             - name: RUST_BACKTRACE
               value: 'full'
           livenessProbe:
-            {{- if .Values.bonfire.livenessProbe }}
-            {{- toYaml .Values.bonfire.livenessProbe | nindent 12 }}
+            {{- if .Values.events.livenessProbe }}
+            {{- toYaml .Values.events.livenessProbe | nindent 12 }}
             {{- else }}
             tcpSocket:
-              port: {{ .Values.global.bonfire.port }}
+              port: {{ .Values.global.events.port }}
             initialDelaySeconds: 15
             periodSeconds: 30
             {{- end }}
           readinessProbe:
-            {{- if .Values.bonfire.readinessProbe }}
-            {{- toYaml .Values.bonfire.readinessProbe | nindent 12 }}
+            {{- if .Values.events.readinessProbe }}
+            {{- toYaml .Values.events.readinessProbe | nindent 12 }}
             {{- else }}
             tcpSocket:
-              port: {{ .Values.global.bonfire.port }}
+              port: {{ .Values.global.events.port }}
             initialDelaySeconds: 15
             periodSeconds: 30
             {{- end }}
-          {{- with .Values.bonfire.resources }}
+          {{- with .Values.events.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: config
               subPath: Revolt.toml
-              mountPath: {{ .Values.bonfire.configMountPath }}
-            {{- with .Values.bonfire.extra_volumeMounts }}
+              mountPath: {{ .Values.events.configMountPath }}
+            {{- with .Values.events.extra_volumeMounts }}
             {{ toYaml . | nindent 12 }}
             {{- end }}
       volumes:
         - name: config
           secret:
             secretName: {{ include "stoat.fullname" . }}-config
-        {{- with .Values.bonfire.extra_volumes }}
+        {{- with .Values.events.extra_volumes }}
         {{ toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.bonfire.nodeSelector }}
+      {{- with .Values.events.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.bonfire.affinity }}
+      {{- with .Values.events.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.bonfire.tolerations }}
+      {{- with .Values.events.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

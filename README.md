@@ -106,7 +106,7 @@ global:
 | `global.secret.encryption_key` **REQUIRED**   | Encryption key for sensitive data                       | `''`           |
 | `global.web.port`                             | Port for the web frontend                               | `5000`         |
 | `global.api.port`                             | Port for the API server                                 | `14702`        |
-| `global.bonfire.port`                         | Port for the bonfire events service                     | `14703`        |
+| `global.events.port`                         | Port for the events events service                     | `14703`        |
 | `global.autumn.port`                          | Port for the autumn file server                         | `14704`        |
 | `global.january.port`                         | Port for the january metadata proxy                     | `14705`        |
 | `global.gifbox.port`                          | Port for the gifbox proxy                               | `14706`        |
@@ -258,26 +258,26 @@ in [Revolt.toml](https://github.com/stoatchat/stoatchat/blob/stable/crates/core/
 | `api.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                      |
 | `api.configMountPath`    | Config mount path in pod     | /Revolt.toml              |
 
-## Bonfire
+## events
 
 | config                       | description                  | default                    |
 |------------------------------|------------------------------|----------------------------|
-| `bonfire.image.repository`   | Image repository             | ghcr.io/revoltchat/bonfire |
-| `bonfire.image.tag`          | Image tag                    | 20250930-2                 |
-| `bonfire.image.pullPolicy`   | Image pull policy            | IfNotPresent               |
-| `bonfire.replicaCount`       | Number of replicas           | 1                          |
-| `bonfire.annotations`        | Additional pod annotations   | `{}`                       |
-| `bonfire.labels`             | Additional pod labels        | `{}`                       |
-| `bonfire.nodeSelector`       | Pod nodeSelector             | `{}`                       |
-| `bonfire.tolerations`        | Pod tolerations list         | `[]`                       |
-| `bonfire.affinity`           | Pod affinity                 | `{}`                       |
-| `bonfire.resources`          | Resource requests and limits | `{}`                       |
-| `bonfire.livenessProbe`      | Liveness probe               |                            |
-| `bonfire.readinessProbe`     | Readiness probe              |                            |
-| `bonfire.service.type`       | Service type                 | ClusterIP                  |
-| `bonfire.extra_volumes`      | Additional pod volumes       | `[]`                       |
-| `bonfire.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                       |
-| `bonfire.configMountPath`    | Config mount path in pod     | /Revolt.toml               |
+| `events.image.repository`   | Image repository             | ghcr.io/revoltchat/events |
+| `events.image.tag`          | Image tag                    | 20250930-2                 |
+| `events.image.pullPolicy`   | Image pull policy            | IfNotPresent               |
+| `events.replicaCount`       | Number of replicas           | 1                          |
+| `events.annotations`        | Additional pod annotations   | `{}`                       |
+| `events.labels`             | Additional pod labels        | `{}`                       |
+| `events.nodeSelector`       | Pod nodeSelector             | `{}`                       |
+| `events.tolerations`        | Pod tolerations list         | `[]`                       |
+| `events.affinity`           | Pod affinity                 | `{}`                       |
+| `events.resources`          | Resource requests and limits | `{}`                       |
+| `events.livenessProbe`      | Liveness probe               |                            |
+| `events.readinessProbe`     | Readiness probe              |                            |
+| `events.service.type`       | Service type                 | ClusterIP                  |
+| `events.extra_volumes`      | Additional pod volumes       | `[]`                       |
+| `events.extra_volumeMounts` | Additional pod volumeMounts  | `[]`                       |
+| `events.configMountPath`    | Config mount path in pod     | /Revolt.toml               |
 
 ## Autumn
 

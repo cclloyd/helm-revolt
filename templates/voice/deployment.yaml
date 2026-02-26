@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "stoat.fullname" . }}-voice"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "stoat.labels" . | nindent 4 }}
+    stoat-app: voice-ingress
+  {{- with (merge (.Values.global.all.deployment.annotations | default dict) (.Values.voice.annotations | default dict)) }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.voice.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "stoat.selectorLabels" . | nindent 6 }}
+      stoat-app: voice-ingress
+  template:
+    metadata:
+      labels:
+        stoat-app: voice-ingress
+        {{- include "stoat.labels" . | nindent 8 }}
+        {{- with .Values.voice.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: voice-ingress
+          image: "{{ .Values.voice.image.repository }}:{{ default .Values.global.version.app .Values.voice.image.tag }}"
+          imagePullPolicy: {{ .Values.voice.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8500
+              protocol: TCP
+          {{- with .Values.voice.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              subPath: Revolt.toml
+              mountPath: {{ .Values.voice.configMountPath }}
+            {{- with .Values.voice.extra_volumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ include "stoat.fullname" . }}-config
+        {{- with .Values.voice.extra_volumes }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.voice.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.voice.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.voice.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
