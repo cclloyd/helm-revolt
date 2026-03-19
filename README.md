@@ -48,7 +48,10 @@ To use the minimal setup, you will require
         encryption_key: ''
     ```
 3. Fill out any other credentials you may need, such as RabbitMQ or other external charts.
-4. Run `helm install ./ stoat -f my_values.yaml`
+4. Run helm install command
+   ```shell
+   helm install stoat oci://ghcr.io/cclloyd/helm-stoat/stoat --version 0.0.0-latest -n stoat -f path/to/values.yaml
+   ```
 5. Once it's done setting itself, up, access it at your external URL. It may take a few minutes to spin up from scratch.
 
 Congrats, you have a minimal working setup. A slightly more complete setup can be seen
