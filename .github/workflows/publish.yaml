@@ -3,7 +3,7 @@ name: Publish Helm Chart to GHCR
 env:
   GHCR_REGISTRY: ghcr.io
   GHCR_NAMESPACE: cclloyd/helm-stoat
-  CHART_DIR: script/helm/stoat
+  CHART_DIR: .
 
 on:
   push:
