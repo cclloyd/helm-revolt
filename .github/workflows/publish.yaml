@@ -35,6 +35,8 @@ jobs:
             helm registry login "${GHCR_REGISTRY}" \
               --username "${{ github.actor }}" \
               --password-stdin
+          ls -lah scripts
+          ls -lah scripts/helm
 
       - name: Read chart and app versions from Chart.yaml
         id: chart_meta
