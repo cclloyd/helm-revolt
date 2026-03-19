@@ -1,0 +1,65 @@
+name: Publish Helm Chart to GHCR
+
+env:
+  GHCR_REGISTRY: ghcr.io
+  GHCR_NAMESPACE: cclloyd/helm-stoat
+  CHART_DIR: script/helm/stoat
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.15.2
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.HELM_CHARTS_PAT }}" | \
+            helm registry login "${GHCR_REGISTRY}" \
+              --username "${{ github.actor }}" \
+              --password-stdin
+
+      - name: Read chart and app versions from Chart.yaml
+        id: chart_meta
+        working-directory: ${{ env.CHART_DIR }}
+        run: |
+          chart_version=$(grep '^version:' Chart.yaml | awk '{print $2}')
+          app_version=$(grep '^appVersion:' Chart.yaml | awk '{print $2}' | sed 's/"//g')
+          echo "chart_version=$chart_version" >> "$GITHUB_OUTPUT"
+          echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
+
+      - name: Package Helm chart
+        working-directory: ${{ env.CHART_DIR }}
+        run: |
+          helm package . --destination ../..
+
+      - name: Publish Helm chart to registry
+        working-directory: ${{ env.CHART_DIR }}/../..
+        env:
+          CHART_VERSION: ${{ steps.chart_meta.outputs.chart_version }}
+        run: |
+          CHART_NAME=garage
+          CHART_TGZ="${CHART_NAME}-${CHART_VERSION}.tgz"
+          OCI_REF="oci://${GHCR_REGISTRY}/${GHCR_NAMESPACE}"
+
+          echo "Pushing ${CHART_TGZ} to ${OCI_REF}"
+          helm push "${CHART_TGZ}" "${OCI_REF}"
+
+
